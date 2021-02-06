@@ -1,3 +1,5 @@
 **/*.o
-labs/lab01/lab_intro
-labs/lab02/sketchify
+lab01/lab_intro
+lab02/sketchify
+**/.DS_Store
+lab01/out-*.png
