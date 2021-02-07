@@ -1,0 +1,59 @@
+﻿/*
+
+██╗   ██╗██████╗  ██████╗
+██║   ██║██╔══██╗██╔════╝
+██║   ██║██████╔╝██║
+██║   ██║██╔══██╗██║
+╚██████╔╝██████╔╝╚██████╗
+ ╚═════╝ ╚═════╝  ╚═════╝
+
+*/
+
+/* removes Include this course in the public course index from Settings*/
+.public_options { display: none !important; }
+
+/* hides Other Contacts table on profile/settings */
+.channel_list.other_channels { display:none !important; }
+
+/* hides SMS */
+a[href="#register_sms_number"] { display:none !important; }
+
+/* hides 'Conclude this Course' from course Settings */
+a.Button--course-settings[href$="confirm_action?event=conclude"] { display: none !important; }
+
+/* hides 'Reset Course Content' from course Settings */
+.reset_course_content_button { display: none !important; }
+
+/* easier to read threaded discussion */
+.replies {
+padding-left: 7px;
+border-left: solid #A5AFB5 16px;
+}
+.discussion-read-state-btn {
+top: 32px;
+}
+div.entry-content {
+padding-left:0px !important;
+}
+
+/* hiding user emails in group page */
+.user-list__item-details div.email { display: None; }
+
+/* hides Ally LTI links as it should now be seen by ISS admins */
+.section .context_external_tool_4667 { display: none !important;}
+.section .context_external_tool_4668 { display: none !important;}
+
+/* hiding user emails in prior users page */
+td.name div.email { display: None; }
+
+/* hiding grade by question */
+label[for="enable_speedgrader_grade_by_question"] {
+display: none;
+}
+#enable_speedgrader_grade_by_question {
+display: none;
+}
+
+#add_notification_form label[for="account_notification_send_message"] {
+  display: none;
+}
