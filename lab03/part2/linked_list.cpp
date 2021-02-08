@@ -10,6 +10,7 @@
  */ 
 void insert(Node*& head, int newKey) {
   Node * curr = new Node;
+  curr->next = NULL;
   curr->key  = newKey;
   curr->next = head;
 
@@ -59,8 +60,23 @@ std::vector<int> to_vector(Node* head) {
  * POST: else head remains the first Node in the linked_list
  */
 void delete_last_element(Node*& head){
-  // ******** WRITE YOUR CODE HERE ********
-
+	Node* prev = head;
+	if ( ! prev ) {
+		// have no items at all
+		return;
+	} else if ( ! prev->next ) {
+		// only have one item before
+		delete prev;
+		head = NULL;
+	} else {
+		// have more than one items
+		while (prev->next->next != NULL) {
+			prev = prev->next;
+		}
+		Node* last = prev->next;
+		delete last;
+		prev->next = NULL;
+	}
 }
 
 /**
@@ -73,8 +89,29 @@ void delete_last_element(Node*& head){
  * POST: head is the new first Node of the linked_list, if updated
  */ 
 void remove(Node*& head, int oldKey) {
-  // ******** WRITE YOUR CODE HERE ********
-
+	Node* prev = head;
+	if ( prev == NULL ) {
+		// have no items at all
+		return;
+	} else if (prev->key == oldKey) {
+		// head contains oldKey
+		Node* discard = head;
+		head = head->next;
+		delete discard;
+	} else {
+		Node* curr = prev -> next;
+		while ( curr != NULL ) {
+			if (curr->key == oldKey) {
+				Node* discard = curr;
+				prev->next = curr->next;
+				// FOUND
+				delete discard;
+				return;
+			}
+			prev = curr;
+			curr = curr->next;
+		}
+	}
 }
 
 /**
@@ -87,8 +124,27 @@ void remove(Node*& head, int oldKey) {
  * POST: else a new Node (with key=newKey) is right after the Node with key = oldKey.
  */
 void insert_after(Node* head, int oldKey, int newKey){
-  // ******** WRITE YOUR CODE HERE ********
-
+	if (head == NULL) {
+		// empty at beginning
+		return;
+	}
+	Node* oldKeyMatched = NULL;
+    for (Node* curr = head; curr != NULL;) {
+		if (curr->key == oldKey) {
+			oldKeyMatched = curr;
+			break;
+		} else {
+			curr = curr->next;
+		}
+	}
+	if (oldKeyMatched != NULL) {
+		// FOUND
+		Node* newNode = new Node;
+	    newNode->next = NULL;
+		newNode->key = newKey;
+		newNode->next = oldKeyMatched->next;
+		oldKeyMatched->next = newNode;
+	}
 }
 
 /** 
@@ -102,7 +158,37 @@ void insert_after(Node* head, int oldKey, int newKey){
  * For example: [1, 2] and [3, 4, 5] would return [1, 3, 2, 4, 5]
  */
 Node* interleave(Node* list1, Node* list2){
-  // ******** WRITE YOUR CODE HERE ********
-  return NULL;  // ******** DELETE THIS LINE ********
-
+	Node* curr1 = list1;
+	Node* curr2 = list2;
+	Node* listNew = NULL;
+	Node* prevNew = listNew;
+	while (curr1 != NULL || curr2 != NULL) {
+		if (curr1 != NULL) {
+			Node* currNew = new Node;
+			currNew->next = NULL;
+			currNew->key = curr1->key;
+			if (prevNew == NULL) {
+				prevNew = currNew;
+				listNew = currNew;
+			} else {
+				prevNew->next = currNew;
+				prevNew = currNew;
+			}
+			curr1 = curr1->next;
+		}
+		if (curr2 != NULL) {
+			Node* currNew = new Node;
+			currNew->next = NULL;
+			currNew->key = curr2->key;
+			if (prevNew == NULL) {
+				prevNew = currNew;
+				listNew = currNew;
+			} else {
+				prevNew->next = currNew;
+				prevNew = currNew;
+			}
+			curr2 = curr2->next;
+		}
+	}
+	return listNew;
 }
