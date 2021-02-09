@@ -25,11 +25,11 @@ void Block::render(PNG &im, int x) const {
 
 void Block::build(PNG &im, int x, int width) {
   data.resize(width);
-  for (unsigned int i=0; i<width; i++) {
+  for (int i=0; i<width; i++) {
     data[i].resize(im.height());
   }
-  for (unsigned int i=0; i<width; i++) {
-    for (int j=0; j<im.height(); j++) {
+  for (int i=0; i<width; i++) {
+    for (unsigned int j=0; j<im.height(); j++) {
       data[i][j] = * im.getPixel(x+i, j);
     }
   }

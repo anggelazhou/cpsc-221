@@ -146,30 +146,18 @@ void Chain::clear()
  */
 void Chain::copy(Chain const &other)
 {
-  if (this == &other)
-  {
-    return;
-  }
-  clear();
-  head_ = NULL;
-  Node *oc = other.head_;
-  Node *p = NULL;
-  Node *c = NULL;
-  while (oc != NULL)
-  {
-    length_++;
-    c = new Node(oc->data);
-    if (p == NULL)
-    {
-      head_ = c;
-    }
-    else
-    {
-      p->next = c;
-      c->prev = p;
-    }
-    p = c;
-    oc = oc->next;
+  Node* curr = other.head_;
+  Node* clone = new Node(curr->data);
+  clone->prev = NULL; 
+  this->head_ = clone;
+  this->length_ = other.length_;
+  while(curr != NULL) {
+    Node* prev = clone; 
+    curr = curr->next;
+    if(!curr) break;  
+    clone->next = new Node(curr->data);
+    clone = clone->next; 
+    clone->prev = prev;
   }
 }
 
