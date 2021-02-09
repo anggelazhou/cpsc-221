@@ -148,16 +148,15 @@ void Chain::copy(Chain const &other)
 {
   Node* curr = other.head_;
   Node* clone = new Node(curr->data);
-  clone->prev = NULL; 
-  this->head_ = clone;
-  this->length_ = other.length_;
-  while(curr != NULL) {
+  head_ = clone;
+  length_ = other.length_;
+  curr = curr->next;
+  while(curr != NULL) { 
     Node* prev = clone; 
-    curr = curr->next;
-    if(!curr) break;  
     clone->next = new Node(curr->data);
     clone = clone->next; 
     clone->prev = prev;
+    curr = curr->next;
   }
 }
 
