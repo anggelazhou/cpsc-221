@@ -56,30 +56,49 @@ void Chain::swap(Node *p, Node *q) {
   Node *qp = q->prev;
   Node *qn = q->next;
 
-  p->prev = qp;
-  p->next = qn;
-  q->prev = pp;
-  q->next = pn;
+  p->prev = p == qp ? q : qp;
+  p->next = p == qn ? q : qn;
+  q->prev = q == pp ? p : pp;
+  q->next = q == pn ? p : pn;
 
   if (pp == NULL) {
     // *p node is head before
     head_ = q;
   } else {
-    pp->next = q;
+	if (pp != q) {
+		pp->next = q;
+	}
   }
   if (pn != NULL) {
-    pn->prev = q;
+	if (pn != q) {
+		pn->prev = q;
+	}
   } // ELSE *p node is tail before
 
   if (qp == NULL) {
     // *q node is head before
     head_ = p;
   } else {
-    qp->next = p;
+	if (qp != p) {
+      qp->next = p;
+	}
   }
   if (qn != NULL) {
-    qn->prev = p;
+	if (qn != p) {
+      qn->prev = p;
+	}
   } // ELSE *q node is tail before
+  /*
+  cout << "after swapped " << head_
+		  << " --> " << head_->next
+		  << " --> " << head_->next->next
+		  << " --> " << head_->next->next->next
+		  << " --> " << head_->next->next->next->next
+		  << " --> " << head_->next->next->next->next->next
+		  << endl;
+  int a = -1;
+  cin >> a;
+  */
 }
 
 /**
