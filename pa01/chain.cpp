@@ -2,14 +2,14 @@
 #include <cmath>
 #include <iostream>
 
-
 // PA1 functions
 
 /**
  * Destroys the current Chain. This function should ensure that
  * memory does not leak on destruction of a chain.
  */
-Chain::~Chain() {
+Chain::~Chain()
+{
   clear();
 }
 
@@ -24,16 +24,21 @@ Chain::~Chain() {
  *            If p is NULL, the new node becomes the head of the chain.
  * @param ndata = The data to be inserted.
  */
-Chain::Node * Chain::insertAfter(Node * p, const Block &ndata) {
+Chain::Node *Chain::insertAfter(Node *p, const Block &ndata)
+{
   length_ = length_ + 1;
   Node *newNode = new Node(ndata);
-  if (p == NULL) {
+  if (p == NULL)
+  {
     head_ = newNode;
-  } else {
+  }
+  else
+  {
     Node *pn = p->next;
     p->next = newNode;
     newNode->prev = p;
-    if (pn != NULL) {   // p is not a tail before
+    if (pn != NULL)
+    { // p is not a tail before
       pn->prev = newNode;
       newNode->next = pn;
     }
@@ -47,8 +52,10 @@ Chain::Node * Chain::insertAfter(Node * p, const Block &ndata) {
  * If p or q is NULL or p==q, do nothing.
  * Change the chain's head pointer if necessary.
  */
-void Chain::swap(Node *p, Node *q) {
-  if (p == NULL || q == NULL || p == q) {
+void Chain::swap(Node *p, Node *q)
+{
+  if (p == NULL || q == NULL || p == q)
+  {
     return;
   }
   Node *pp = p->prev;
@@ -61,32 +68,44 @@ void Chain::swap(Node *p, Node *q) {
   q->prev = q == pp ? p : pp;
   q->next = q == pn ? p : pn;
 
-  if (pp == NULL) {
+  if (pp == NULL)
+  {
     // *p node is head before
     head_ = q;
-  } else {
-	if (pp != q) {
-		pp->next = q;
-	}
   }
-  if (pn != NULL) {
-	if (pn != q) {
-		pn->prev = q;
-	}
+  else
+  {
+    if (pp != q)
+    {
+      pp->next = q;
+    }
+  }
+  if (pn != NULL)
+  {
+    if (pn != q)
+    {
+      pn->prev = q;
+    }
   } // ELSE *p node is tail before
 
-  if (qp == NULL) {
+  if (qp == NULL)
+  {
     // *q node is head before
     head_ = p;
-  } else {
-	if (qp != p) {
-      qp->next = p;
-	}
   }
-  if (qn != NULL) {
-	if (qn != p) {
+  else
+  {
+    if (qp != p)
+    {
+      qp->next = p;
+    }
+  }
+  if (qn != NULL)
+  {
+    if (qn != p)
+    {
       qn->prev = p;
-	}
+    }
   } // ELSE *q node is tail before
   /*
   cout << "after swapped " << head_
@@ -105,10 +124,12 @@ void Chain::swap(Node *p, Node *q) {
  * Destroys all dynamically allocated memory associated with the
  * current Chain class.
  */
-void Chain::clear() {
+void Chain::clear()
+{
   Node *curr = head_;
   Node *next;
-  while (curr != NULL) {
+  while (curr != NULL)
+  {
     next = curr->next;
     delete curr;
     curr = next;
@@ -123,13 +144,33 @@ void Chain::clear() {
  * independent. This function is used in both the copy
  * constructor and the assignment operator for Chains.
  */
-void Chain::copy(Chain const &other) {
-  // if (this == &other) {
-  //   return;
-  // }
-  // clear();
-  head_ = other.head_;
-  length_ = other.length_;
+void Chain::copy(Chain const &other)
+{
+  if (this == &other)
+  {
+    return;
+  }
+  clear();
+  head_ = NULL;
+  Node *oc = other.head_;
+  Node *p = NULL;
+  Node *c = NULL;
+  while (oc != NULL)
+  {
+    length_++;
+    c = new Node(oc->data);
+    if (p == NULL)
+    {
+      head_ = c;
+    }
+    else
+    {
+      p->next = c;
+      c->prev = p;
+    }
+    p = c;
+    oc = oc->next;
+  }
 }
 
 /* Modifies the current chain: 
@@ -148,8 +189,10 @@ void Chain::copy(Chain const &other) {
  *    among the remaining blocks, move (swap) it to follow B's node,
  *    then repeat to unscramble the chain/image.
  */
-void Chain::unscramble() {
-  if (head_ == NULL) {
+void Chain::unscramble()
+{
+  if (head_ == NULL)
+  {
     return;
   }
   // find the first block
@@ -157,47 +200,56 @@ void Chain::unscramble() {
   double tmp = 0.0;
   Node *maxNode = NULL;
   Node *curr = head_;
-  while (curr != NULL) {
+  while (curr != NULL)
+  {
     tmp = minDistanceFromOthers(curr);
-    if (max < tmp) {
+    if (max < tmp)
+    {
       max = tmp;
       maxNode = curr;
     }
-    curr = curr -> next;
+    curr = curr->next;
   }
   swap(head_, maxNode);
 
   //repeatly find adjacent nodes from the 1st block
   curr = head_;
-  while (curr != NULL && curr->next != NULL) {
-    Node *nextPotentialRight = curr -> next;
+  while (curr != NULL && curr->next != NULL)
+  {
+    Node *nextPotentialRight = curr->next;
     Node *closestMatchRight = NULL;
     double min = 10.0;
-    while (nextPotentialRight != NULL) {
-      tmp = curr -> data.distanceTo(nextPotentialRight->data);
-      if (min > tmp) {
+    while (nextPotentialRight != NULL)
+    {
+      tmp = curr->data.distanceTo(nextPotentialRight->data);
+      if (min > tmp)
+      {
         min = tmp;
         closestMatchRight = nextPotentialRight;
       }
-      nextPotentialRight = nextPotentialRight -> next;
+      nextPotentialRight = nextPotentialRight->next;
     }
     swap(curr->next, closestMatchRight);
-    curr = curr -> next;
+    curr = curr->next;
   }
 }
 
-double Chain::minDistanceFromOthers(Node *p) const {
+double Chain::minDistanceFromOthers(Node *p) const
+{
   double min = 10.0;
   double tmp = 0.0;
   Node *curr = head_;
-  while (curr != NULL) {
-    if (curr != p) {
+  while (curr != NULL)
+  {
+    if (curr != p)
+    {
       tmp = curr->data.distanceTo(p->data);
-      if (min > tmp) {
+      if (min > tmp)
+      {
         min = tmp;
       }
     }
-    curr = curr -> next;
+    curr = curr->next;
   }
   return min;
 }
