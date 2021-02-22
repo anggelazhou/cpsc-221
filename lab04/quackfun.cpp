@@ -102,16 +102,17 @@ namespace QuackFun {
     {
         if (s.empty()) return true;
         T currStack = s.top();
+        s.pop();
         T currQueue = q.front();
+        q.pop();
+        q.push(currQueue);
         if (currStack != currQueue) {
+            verifySame(s, q); 
             s.push(currStack);
             return false;
         } else {
-            s.pop();
-            q.pop();
             bool retval = verifySame(s, q);
             s.push(currStack);
-            q.push(currQueue);
             return retval;
         }
     }
