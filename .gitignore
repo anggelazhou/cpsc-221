@@ -2,4 +2,7 @@
 lab01/lab_intro
 lab02/sketchify
 **/.DS_Store
+**/.vscode
+**/pa02/testStackQueue
+**/pa02/testMaze
 lab01/out-*.png

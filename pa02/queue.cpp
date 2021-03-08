@@ -30,7 +30,7 @@ T Queue<T>::dequeue()
     /**
      * @todo Your code here! 
      */
-    myQueue.popL();
+    return myQueue.popL();
 
 }
 
@@ -47,7 +47,7 @@ T Queue<T>::peek()
     /**
      * @todo Your code here! 
      */
-    myQueue.peekL();
+    return myQueue.peekL();
 }
 
 /**
@@ -61,5 +61,5 @@ bool Queue<T>::isEmpty() const
     /**
      * @todo Your code here! 
      */
-    myQueue.isEmpty();
+    return myQueue.isEmpty();
 }

@@ -8,7 +8,6 @@ template <class T>
 Deque<T>::Deque(){
     n1 = -1;
     n2 = -1;
-
 }
 
 /**
@@ -19,12 +18,11 @@ Deque<T>::Deque(){
 template <class T>
 void Deque<T>::pushR(T newItem)
 {
-    /**
-     * @todo Your code here!
-     */
     data.push_back(newItem);
-    n2++;
-    if (n1 == -1) n1++;
+    n2 ++;
+    if (n1 == -1) {
+        n1 = 0;
+    }
 }
 
 /**
@@ -38,23 +36,22 @@ void Deque<T>::pushR(T newItem)
 template <class T>
 T Deque<T>::popL()
 {
-    /**
-     * @todo Your code here! 
-     */
-    T ret = data[n1];
+    T ret = peekL();
     n1++;
-    if (n1 >= (n2-n1+1)) {
-        vector<T> v;
-        for (int i = n1; i<=n2; i++) {
-            v.push_back(data[i]);
+    // cout << "\t\t\tpopL(): n1=" << n1 << "; n2=" << n2 << "; ret=" << ret << endl;
+    int size = n2 - n1 + 1;
+    if (size > 0 && size <= n1) {
+        vector<T> new_vector;
+        for (int i = n1; i <= n2; i++) {
+            new_vector.push_back(data.at(i));
         }
         data.clear();
-        data = v;
-        n1 = 0;
+        data = new_vector;
         n2 = n2 - n1;
+        n1 = 0;
     }
+
     return ret;
-    
 }
 /**
  * Removes the object at the right of the Deque, and returns it to the
@@ -65,24 +62,23 @@ T Deque<T>::popL()
 template <class T>
 T Deque<T>::popR()
 {
-    /**
-     * @todo Your code here! You will need to replace the following line.
-     */
-    T ret = data[n2];
-    data.pop_back();
+    T ret = peekR();
     n2--;
-    if (n1 >= (n2-n1+1)) {
-        vector<T> v;
-        for (int i = n1; i<=n2; i++) {
-            v.push_back(data[i]);
+    data.pop_back();
+
+    int size = n2 - n1 + 1;
+    if (size > 0 && size <= n1) {
+        vector<T> new_vector;
+        for (int i = n1; i <= n2; i++) {
+            new_vector.push_back(data.at(i));
         }
         data.clear();
-        data = v;
-        n1 = 0;
+        data = new_vector;
         n2 = n2 - n1;
+        n1 = 0;
     }
-    return ret;
 
+    return ret;
 }
 
 /**
@@ -94,10 +90,7 @@ T Deque<T>::popR()
 template <class T>
 T Deque<T>::peekL()
 {
-    /**
-     * @todo Your code here! 
-     */
-    return data[n1];
+    return data.at(n1);
 }
 
 /**
@@ -109,10 +102,7 @@ T Deque<T>::peekL()
 template <class T>
 T Deque<T>::peekR()
 {
-    /**
-     * @todo Your code here! 
-     */
-    return data[n2];
+    return data.at(n2);
 }
 
 /**
@@ -123,8 +113,5 @@ T Deque<T>::peekR()
 template <class T>
 bool Deque<T>::isEmpty() const
 {
-    /**
-     * @todo Your code here! 
-     */
-    return (n1 == -1 && n2 == -1) || n1 > n2;
+    return n1 > n2 || n1 < 0;
 }

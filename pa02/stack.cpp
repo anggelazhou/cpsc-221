@@ -35,7 +35,7 @@ T Stack<T>::pop()
     /**
      * @todo Your code here! 
      */
-    myStack.popR();
+    return myStack.popR();
     
 }
 
@@ -53,7 +53,7 @@ T Stack<T>::peek()
     /**
      * @todo Your code here! 
      */
-    myStack.peekR();
+    return myStack.peekR();
 }
 
 /**
@@ -69,5 +69,5 @@ bool Stack<T>::isEmpty() const
     /**
      * @todo Your code here!
      */
-    myStack.isEmpty();
+    return myStack.isEmpty();
 }
