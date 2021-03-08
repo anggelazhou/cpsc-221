@@ -6,8 +6,8 @@
 
 template <class T>
 Deque<T>::Deque(){
-
-/* YOUR CODE HERE! */
+    n1 = -1;
+    n2 = -1;
 
 }
 
@@ -22,6 +22,9 @@ void Deque<T>::pushR(T newItem)
     /**
      * @todo Your code here!
      */
+    data.push_back(newItem);
+    n2++;
+    if (n1 == -1) n1++;
 }
 
 /**
@@ -38,6 +41,20 @@ T Deque<T>::popL()
     /**
      * @todo Your code here! 
      */
+    T ret = data[n1];
+    n1++;
+    if (n1 >= (n2-n1+1)) {
+        vector<T> v;
+        for (int i = n1; i<=n2; i++) {
+            v.push_back(data[i]);
+        }
+        data.clear();
+        data = v;
+        n1 = 0;
+        n2 = n2 - n1;
+    }
+    return ret;
+    
 }
 /**
  * Removes the object at the right of the Deque, and returns it to the
@@ -51,6 +68,21 @@ T Deque<T>::popR()
     /**
      * @todo Your code here! You will need to replace the following line.
      */
+    T ret = data[n2];
+    data.pop_back();
+    n2--;
+    if (n1 >= (n2-n1+1)) {
+        vector<T> v;
+        for (int i = n1; i<=n2; i++) {
+            v.push_back(data[i]);
+        }
+        data.clear();
+        data = v;
+        n1 = 0;
+        n2 = n2 - n1;
+    }
+    return ret;
+
 }
 
 /**
@@ -65,6 +97,7 @@ T Deque<T>::peekL()
     /**
      * @todo Your code here! 
      */
+    return data[n1];
 }
 
 /**
@@ -79,6 +112,7 @@ T Deque<T>::peekR()
     /**
      * @todo Your code here! 
      */
+    return data[n2];
 }
 
 /**
@@ -92,4 +126,5 @@ bool Deque<T>::isEmpty() const
     /**
      * @todo Your code here! 
      */
+    return (n1 == -1 && n2 == -1) || n1 > n2;
 }
