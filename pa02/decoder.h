@@ -6,6 +6,7 @@
 #include "cs221util/RGBAPixel.h"
 #include <utility>
 #include <vector>
+#include "stack.h"
 using namespace std;
 using namespace cs221util;
 
@@ -96,12 +97,14 @@ private:
     void setGrey(PNG & im, pair<int,int> loc);
 
 
+    void resolvePath(vector<vector<bool>> & v, Stack<pair<int, int>> & path, pair<int, int> & targetLoc, int len);
+
 // ========= private member variables ================
 
 	pair<int,int> start;  // col,row
 	PNG mapImg; // this image has a maze encoded in it 
-    vector<pair<int,int>> pathPts; // vector of points on the solution path
-
+    vector<pair<int,int>> pathPts;  // vector of points on the solution path
+    vector<vector<int>> distances;  // each loc to start-loc distances
 };
 
 #endif
