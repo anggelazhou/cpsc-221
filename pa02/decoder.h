@@ -96,9 +96,6 @@ private:
     // x is the value of a colour channel.
     void setGrey(PNG & im, pair<int,int> loc);
 
-
-    void resolvePath(vector<vector<bool>> & v, Stack<pair<int, int>> & path, pair<int, int> & targetLoc, int len);
-
 // ========= private member variables ================
 
 	pair<int,int> start;  // col,row

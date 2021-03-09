@@ -44,37 +44,26 @@ decoder::decoder(const PNG & tm, pair<int,int> s)
     }
 
    // found the fareast
-    pair<int, int> locFarest = findSpot();
-   //  cout << "!!!! farest x=" << locFarest.first << " y=" << locFarest.second 
-   //          << " distance=" << distances.at(locFarest.second).at(locFarest.first) << endl;
+  pair<int, int> locFarest = findSpot();
+    cout << "!!!! farest x=" << locFarest.first << " y=" << locFarest.second 
+            << " distance=" << distances.at(locFarest.second).at(locFarest.first) << endl;
 
     for (unsigned int y=0; y<mapImg.height(); y++) {
         for (unsigned int x=0; x<mapImg.width(); x++) {
             visitedMatrix.at(y).at(x) = false;
         }
     }
-    Stack<pair<int, int>> path;
-    path.push(start);
+    Stack<pair<int, int>> stack;
+    stack.push(start);
     visitedMatrix.at(start.second).at(start.first) = true;
-    resolvePath(visitedMatrix, path, locFarest, 1);
-}
 
-void decoder::resolvePath(vector<vector<bool>> & v, Stack<pair<int, int>> & path, pair<int, int> & targetLoc, int len) {
-    pair<int, int> top = path.peek();
-    if (top.first == targetLoc.first && top.second == targetLoc.second) {
-        // found
-      //   cout << "!!!! FOUND !!!!" << endl;
-        Stack<pair<int, int>> reversed;
-        while (!path.isEmpty()) {
-            reversed.push(path.pop());
-        }
-        while (!reversed.isEmpty()) {
-            pathPts.push_back(reversed.pop());
-        }
-      //   printf("\tpath points length = %d\n", pathPts.size());
-    } else if (!path.isEmpty() && pathPts.empty()) {
+
+    pair<int, int> top = stack.peek();
+    bool foundNext = false;
+    while (top.first != locFarest.first || top.second != locFarest.second) {
         vector<pair<int, int>> lbra = neighbors(top);
         int currD = distances.at(top.second).at(top.first);
+        foundNext = false;
         for (int i=0; i<lbra.size(); i++) {
             pair<int, int> next = lbra.at(i);
             if (next.first < 0 || next.first >= mapImg.width() 
@@ -86,21 +75,35 @@ void decoder::resolvePath(vector<vector<bool>> & v, Stack<pair<int, int>> & path
             if (nextVal == -1) {
                 // unreachable
                 continue;
-            } else if (nextVal == currD + 1) {
-                 if (v.at(next.second).at(next.first)) {
-                    // visited before
+            } else if (nextVal != currD + 1) {
+                // not shortest path
+                continue;
+            } else {
+                 if (visitedMatrix.at(next.second).at(next.first)) {
+                     // visited before
                      continue;
                  }
-                // potential
-                path.push(next);
-                v.at(next.second).at(next.first) = true;
-                resolvePath(v, path, targetLoc, len + 1);
-                if (!path.isEmpty()) {
-                    path.pop();
-                }
-            } // else  continue
+                 visitedMatrix.at(next.second).at(next.first) = true;
+                 stack.push(next);
+                 foundNext = true;
+                 break;
+            }
         }       // end for
-    } // else return
+        if (!foundNext) {
+            // dead end
+            stack.pop();
+        }
+        top = stack.peek();
+    }
+    // found
+    // cout << "!!!! FOUND !!!! x = " << top.first << ", y = " << top.second << endl;
+    Stack<pair<int, int>> reversed;
+    while (!stack.isEmpty()) {
+        reversed.push(stack.pop());
+    }
+    while (!reversed.isEmpty()) {
+        pathPts.push_back(reversed.pop());
+    }
 }
 
 PNG decoder::renderSolution(){
