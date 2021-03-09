@@ -179,7 +179,7 @@ pair<int,int> decoder::findSpot(){
 }
 
 int decoder::pathLength(){
-   int total = 0;
+   int total = 1;
    pair<int, int> prev = pathPts.at(0);
    for (int i=1; i<pathPts.size(); i++) {
       pair<int, int> curr = pathPts.at(i);
