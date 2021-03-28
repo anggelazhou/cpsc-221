@@ -183,6 +183,13 @@ class SQtree {
 
   /* BEGIN ============== Your personal private functions ============= */
 
+  int nodeCount(Node * node);
+
+  void deleteNode(Node * node);
+
+  Node * copyNode(Node * node);
+
+  void renderNode(Node * node, PNG & im);
 
   /* END ================ Your personal private functions ============= */
 

@@ -19,6 +19,10 @@ class stats {
   vector< vector< long >> sumsqGreen;
   vector< vector< long >> sumsqBlue;
 
+  long calcSum(PNG & im, char channel, int x, int y);
+  
+  long calcSumSq(PNG & im, char channel, int x, int y);
+
   /**
    * Returns the sums of all pixel values in one color channel.
    * Useful in computing the average color of a rectangle.
@@ -50,8 +54,8 @@ class stats {
   stats(PNG & im); 
 
   /**
-   * Given a rectangle, compute its sum of squared deviations from avg,
-   * over all pixels and all color channels. 
+   * Given a rectangle, m avg,
+   * over all pixels and all color channels. compute its sum of squared deviations fro
    * @param ul is (x,y) of the upper left corner of the rectangle 
    * @param w,h are the width and height of the rectangle
    */
