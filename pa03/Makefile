@@ -5,10 +5,12 @@ OBJS_EXE = RGBAPixel.o lodepng.o PNG.o pa3.o sqtree.o stats.o
 CXX = clang++
 CXXFLAGS = -std=c++1y -stdlib=libc++ -c -g -O0 -Wall -Wextra -pedantic 
 LD = clang++
-#LDFLAGS = -std=c++1y -stdlib=libc++ -lc++abi -lpthread -lm
-LDFLAGS = -std=c++1y -stdlib=libc++ -lpthread -lm
+LDFLAGS = -std=c++1y -stdlib=libc++ -lc++abi -lpthread -lm
 
-all : pa3
+all : pa3 gen-png
+
+gen-png : create-png.o PNG.o RGBAPixel.o lodepng.o
+	$(LD) create-png.o PNG.o RGBAPixel.o lodepng.o $(LDFLAGS) -o gen-png
 
 $(EXE) : $(OBJS_EXE)
 	$(LD) $(OBJS_EXE) $(LDFLAGS) -o $(EXE)
@@ -30,7 +32,10 @@ sqtree.o : sqtree.h sqtree.cpp stats.h cs221util/PNG.h cs221util/RGBAPixel.h
 	$(CXX) $(CXXFLAGS) sqtree.cpp -o $@
 
 pa3.o : pa3.cpp cs221util/PNG.h cs221util/RGBAPixel.h sqtree.h
-	$(CXX) $(CXXFLAGS) pa3.cpp -o pa3.o
+	$(CXX) $(CXXFLAGS) pa3.cpp -o pa3.o 
+
+create-png.o : create-png.cpp cs221util/PNG.h
+	$(CXX) $(CXXFLAGS) create-png.cpp -o create-png.o 
 
 clean :
-	-rm -f *.o $(EXE)
+	-rm -f *.o $(EXE) gen-png

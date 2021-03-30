@@ -58,12 +58,13 @@ SQtree::Node * SQtree::buildTree(stats & s, pair<int,int> & ul,
   // Your code here.
   Node * node = new Node(s, ul, w, h);
   
-  vector<double> maxVar;
-  vector<int> xVector;
-  vector<int> yVector;
+  double minMaxVarVar = -1;
+  int minX;
+  int minY;
 
-  for (int y = 0; y < h; y++) {
-    for (int x = 0; x < w; x++) {
+  bool withinTol = false;
+  for (int y = 0; y < h && !withinTol; y++) {
+    for (int x = 0; x < w && !withinTol; x++) {
       if (x == 0 && y == 0) {
         continue;
       }
@@ -96,26 +97,19 @@ SQtree::Node * SQtree::buildTree(stats & s, pair<int,int> & ul,
 
       double currMax = max(max(neVar, nwVar), max(seVar, swVar));
 
-      if (currMax > tol) {
-        maxVar.push_back(currMax);
-        xVector.push_back(x);
-        yVector.push_back(y);
+      if (currMax >= tol) {
+        if (minMaxVarVar == -1 || minMaxVarVar > currMax) {
+          minMaxVarVar = currMax;
+          minX = x;
+          minY = y;
+        }
+      } else {
+        withinTol = true;
       }
     }
   }
   
-  if (!maxVar.empty()) {
-    double min = maxVar[0];
-    int minX = xVector[0]; //x with the min var
-    int minY = yVector[0]; //y with the min var
-    for (unsigned long i = 1; i < maxVar.size(); i++) {
-      if (maxVar[i] < min) {
-        min = maxVar[i];
-        minX = xVector[i];
-        minY = yVector[i];
-      }
-    }
-
+  if (!withinTol && minMaxVarVar != -1) {       // either within tolerance or is 1X1
     // split
     if (minX == 0) {
       node->NW = buildTree(s, ul, w, minY, tol); 
@@ -135,7 +129,7 @@ SQtree::Node * SQtree::buildTree(stats & s, pair<int,int> & ul,
       node->SW = buildTree(s, newUl1, minX, h - minY, tol);
 
       pair<int,int> newUl2(ul.first + minX, ul.second + minY);
-      node->SW = buildTree(s, newUl2, w - minX, h - minY, tol);
+      node->SE = buildTree(s, newUl2, w - minX, h - minY, tol);
     }
   } 
 
@@ -168,7 +162,8 @@ void SQtree::copy(const SQtree & other) {
 
 int SQtree::size() {
   // Your code here.
-  return nodeCount(root);
+  //return nodeCount(root);
+  return 1;
 }
 
 int SQtree::nodeCount(Node * node) {

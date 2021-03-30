@@ -1,6 +1,7 @@
 #ifndef _STATS_H
 #define _STATS_H
 
+#include <unordered_map>
 #include "cs221util/PNG.h"
 #include "cs221util/RGBAPixel.h"
 #include <utility>
@@ -18,6 +19,7 @@ class stats {
   vector< vector< long >> sumsqRed;
   vector< vector< long >> sumsqGreen;
   vector< vector< long >> sumsqBlue;
+  unordered_map<string, double> varMap;
 
   long calcSum(PNG & im, char channel, int x, int y);
   

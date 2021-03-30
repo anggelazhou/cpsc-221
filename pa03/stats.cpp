@@ -1,106 +1,109 @@
 #include "stats.h"
 
 long stats::calcSum(PNG & im, char channel, int x, int y) {
-    long prev = 0;
+    vector< vector< long >> * sum = channel == 'r' ? &sumRed 
+            : (channel == 'g' ? &sumGreen : &sumBlue);
+    
+    RGBAPixel * curr = im.getPixel(x, y);
+    long value = channel == 'r' ? curr->r 
+            : (channel == 'g' ? curr->g : curr->b);
 
-    if (y != 0) {
-        vector< vector< long >> sum = channel == 'r' ? sumRed 
-                : (channel == 'g' ? sumGreen : sumBlue);
-        prev = sum[y-1][x];
-    } 
+   if (x == 0) {
+        if (y == 0) {
+            return value;
 
-    long value = 0;
-
-    for (int i = 0; i <= x; i++) {
-        RGBAPixel * curr = im.getPixel(x, y); 
-        if (channel == 'r') {
-            value += curr->r;
-        } else if (channel == 'g') {
-            value += curr->g;
         } else {
-            value += curr->b;
+            // x = 0, y != 0
+            long prevWidth = (*sum)[y-1][x];
+            return value + prevWidth;
         }
-    }
-
-    return value + prev;
+    } else {
+        if (y == 0) {
+            // x != 0, y = 0
+            long prevHeight = (*sum)[y][x-1];
+            return value + prevHeight;
+        } else {
+            // x != 0, y != 0         
+            long prevWidth = (*sum)[y-1][x];
+            long prevHeight = (*sum)[y][x-1];
+            long prevSubtract = (*sum)[y-1][x-1];           
+            return value + prevWidth + prevHeight - prevSubtract;
+        }
+    } 
 }
 
 long stats::calcSumSq(PNG & im, char channel, int x, int y) {
-    long prev = 0;
+    vector< vector< long >>* sumSq = channel == 'r' ? &sumsqRed 
+                : (channel == 'g' ? &sumsqGreen : &sumsqBlue);
+    
+    RGBAPixel * curr = im.getPixel(x, y);
+    long value = channel == 'r' ? curr->r 
+            : (channel == 'g' ? curr->g : curr->b);
+    value *= value; //square it
 
-    if (y != 0) {
-        vector< vector< long >> sumSq = channel == 'r' ? sumsqRed 
-                : (channel == 'g' ? sumsqGreen : sumsqBlue);
-        prev = sumSq[y-1][x];
-    } 
+   if (x == 0) {
+        if (y == 0) {
+            return value;
 
-    long value = 0;
-
-    for (int i = 0; i <= x; i++) {
-        RGBAPixel * curr = im.getPixel(x, y); 
-        if (channel == 'r') {
-            value += (curr->r)*(curr->r);
-        } else if (channel == 'g') {
-            value += (curr->g)*(curr->g);
         } else {
-            value += (curr->b)*(curr->b);
+            // x = 0, y != 0
+            long prevWidth = (*sumSq)[y-1][x];
+            return value + prevWidth;
         }
-    }
-
-    return value + prev;
+    } else {
+        if (y == 0) {
+            // x != 0, y = 0
+            long prevHeight = (*sumSq)[y][x-1];
+            return value + prevHeight;
+        } else {
+            // x != 0, y != 0         
+            long prevWidth = (*sumSq)[y-1][x];
+            long prevHeight = (*sumSq)[y][x-1];
+            long prevSubtract = (*sumSq)[y-1][x-1];           
+            return value + prevWidth + prevHeight - prevSubtract;
+        }
+    } 
 }
 
 stats::stats(PNG & im){
 /* Your code here!! */
-
+sumRed.resize(im.height(), vector<long>(im.width()));
+sumGreen.resize(im.height(), vector<long>(im.width()));
+sumBlue.resize(im.height(), vector<long>(im.width()));
+sumsqRed.resize(im.height(), vector<long>(im.width()));
+sumsqGreen.resize(im.height(), vector<long>(im.width()));
+sumsqBlue.resize(im.height(), vector<long>(im.width()));
 for (unsigned int y = 0; y<im.height(); y++) {
-    vector<long> red;
-    vector<long> green;
-    vector<long> blue;
-
-    vector<long> redSq;
-    vector<long> greenSq;
-    vector<long> blueSq;
-
     for (unsigned int x = 0; x<im.width(); x++) {
-        red.push_back(calcSum(im, 'r', x, y));
-        green.push_back(calcSum(im, 'g', x, y));
-        blue.push_back(calcSum(im, 'b', x, y));
+        sumRed[y][x] = calcSum(im, 'r', x, y);
+        sumGreen[y][x] = calcSum(im, 'g', x, y);
+        sumBlue[y][x] = calcSum(im, 'b', x, y);
 
-        redSq.push_back(calcSumSq(im, 'r', x, y));
-        greenSq.push_back(calcSumSq(im, 'g', x, y));
-        blueSq.push_back(calcSumSq(im, 'b', x, y));
-
+        sumsqRed[y][x] = calcSumSq(im, 'r', x, y);
+        sumsqGreen[y][x] = calcSumSq(im, 'g', x, y);
+        sumsqBlue[y][x] = calcSumSq(im, 'b', x, y);
     }
-
-    sumRed.push_back(red);
-    sumGreen.push_back(green);
-    sumBlue.push_back(blue);
-
-    sumsqRed.push_back(redSq);
-    sumsqGreen.push_back(greenSq);
-    sumsqBlue.push_back(blueSq);
 }
 
 }
 
 long stats::getSum(char channel, pair<int,int> ul, int w, int h){
 /* Your code here!! */
-vector< vector< long >> sum = channel == 'r' ? sumRed 
-        : (channel == 'g' ? sumGreen : sumBlue);
+vector< vector< long >> * sum = channel == 'r' ? &sumRed 
+        : (channel == 'g' ? &sumGreen : &sumBlue);
 
 if (ul.first == 0) {
     if (ul.second == 0) {
-        return sum[ul.second + h][ul.first + w];
+        return (*sum)[ul.second + h -1][ul.first + w - 1];
     } else {
-        return sum[ul.second + h][ul.first + w] - sum[ul.second][ul.first + w];
+        return (*sum)[ul.second + h - 1][ul.first + w - 1] - (*sum)[ul.second -1][ul.first + w - 1];
     }
 } else {
     if (ul.second == 0) { 
-        return sum[ul.second + h][ul.first + w] - sum[ul.second + h][ul.first];
+        return (*sum)[ul.second + h - 1][ul.first + w - 1] - (*sum)[ul.second + h - 1][ul.first - 1];
     } else {
-        return sum[ul.second + h][ul.first + w] - sum[ul.second][ul.first + w]
-        - sum[ul.second + h][ul.first] + sum[ul.second-1][ul.first-1];
+        return (*sum)[ul.second + h - 1][ul.first + w - 1] - (*sum)[ul.second - 1][ul.first + w - 1]
+        - (*sum)[ul.second + h - 1][ul.first - 1] + (*sum)[ul.second-1][ul.first-1];
     }
 }
 
@@ -108,21 +111,21 @@ if (ul.first == 0) {
 
 long stats::getSumSq(char channel, pair<int,int> ul, int w, int h){
 /* Your code here!! */
-vector< vector< long >> sumSq = channel == 'r' ? sumsqRed 
-        : (channel == 'g' ? sumsqGreen : sumsqBlue);
+vector< vector< long >> * sumSq = channel == 'r' ? &sumsqRed 
+        : (channel == 'g' ? &sumsqGreen : &sumsqBlue);
 
 if (ul.first == 0) {
     if (ul.second == 0) {
-        return sumSq[ul.second + h][ul.first + w];
+        return (*sumSq)[ul.second + h - 1][ul.first + w - 1];
     } else {
-        return sumSq[ul.second + h][ul.first + w] - sumSq[ul.second][ul.first + w];
+        return (*sumSq)[ul.second + h - 1][ul.first + w - 1] - (*sumSq)[ul.second - 1][ul.first + w - 1];
     }
 } else {
     if (ul.second == 0) {
-        return sumSq[ul.second + h][ul.first + w] - sumSq[ul.second + h][ul.first];
+        return (*sumSq)[ul.second + h - 1][ul.first + w - 1] - (*sumSq)[ul.second + h - 1][ul.first - 1];
     } else {
-        return sumSq[ul.second + h][ul.first + w] - sumSq[ul.second][ul.first + w]
-        - sumSq[ul.second + h][ul.first] + sumSq[ul.second-1][ul.first-1];
+        return (*sumSq)[ul.second + h - 1][ul.first + w - 1] - (*sumSq)[ul.second - 1][ul.first + w - 1]
+        - (*sumSq)[ul.second + h - 1][ul.first - 1] + (*sumSq)[ul.second-1][ul.first-1];
     }
 }
 
@@ -132,11 +135,18 @@ if (ul.first == 0) {
 // see written specification for a description of this function.
 double stats::getVar(pair<int,int> ul, int w, int h){
 /* Your code here!! */
-double red   = 1.0*getSumSq('r', ul, w, h) - 1.0*(getSum('r', ul, w, h)*getSum('r', ul, w, h))/(w*h);
-double green = 1.0*getSumSq('g', ul, w, h) - 1.0*(getSum('g', ul, w, h)*getSum('g', ul, w, h))/(w*h);
-double blue  = 1.0*getSumSq('b', ul, w, h) - 1.0*(getSum('b', ul, w, h)*getSum('b', ul, w, h))/(w*h);
+string k = to_string(ul.first) + "," + to_string(ul.second) + "," + to_string(w) + "," + to_string(h);
 
-return red + green + blue;
+if (varMap.find(k) != varMap.end()) return varMap[k];
+
+static double ONE = 1.0;
+double red   = ONE*getSumSq('r', ul, w, h) - ONE*(getSum('r', ul, w, h)*getSum('r', ul, w, h))/(w*h*ONE);
+double green = ONE*getSumSq('g', ul, w, h) - ONE*(getSum('g', ul, w, h)*getSum('g', ul, w, h))/(w*h*ONE);
+double blue  = ONE*getSumSq('b', ul, w, h) - ONE*(getSum('b', ul, w, h)*getSum('b', ul, w, h))/(w*h*ONE);
+double total = red + green + blue;
+varMap[k] = total;
+
+return total;
 }
 	
 RGBAPixel stats::getAvg(pair<int,int> ul, int w, int h){
