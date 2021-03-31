@@ -58,14 +58,15 @@ SQtree::Node * SQtree::buildTree(stats & s, pair<int,int> & ul,
   // Your code here.
   Node * node = new Node(s, ul, w, h);
   
-  double minMaxVarVar = -1;
+  double minMaxVar = -1;
   int minX;
   int minY;
 
   bool withinTol = false;
-  for (int y = 0; y < h && !withinTol; y++) {
-    for (int x = 0; x < w && !withinTol; x++) {
+  for (int x = 0; x < w && !withinTol; x++) {
+    for (int y = 0; y < h && !withinTol; y++) {
       if (x == 0 && y == 0) {
+        // itself so don't do anything
         continue;
       }
 
@@ -75,14 +76,17 @@ SQtree::Node * SQtree::buildTree(stats & s, pair<int,int> & ul,
       double swVar = -1;
 
       if (x == 0) {
+        // horizontal cuts
         nwVar = s.getVar(ul, w, y); 
         pair<int,int> newUl(ul.first, ul.second + y);
         swVar = s.getVar(newUl, w, h - y);
       } else if (y == 0) {
+        // vertical cuts
         nwVar = s.getVar(ul, x, h);
         pair<int,int> newUl(ul.first + x, ul.second);
         neVar = s.getVar(newUl, w - x, h);
       } else {
+        // horizontal and vertical cuts
         nwVar = s.getVar(ul, x, y);
 
         pair<int,int> newUl(ul.first + x, ul.second);
@@ -95,13 +99,20 @@ SQtree::Node * SQtree::buildTree(stats & s, pair<int,int> & ul,
         seVar = s.getVar(newUl2, w - x, h - y);
       }
 
+      // save biggest variance from the two/four
       double currMax = max(max(neVar, nwVar), max(seVar, swVar));
 
-      if (currMax >= tol) {
-        if (minMaxVarVar == -1 || minMaxVarVar > currMax) {
-          minMaxVarVar = currMax;
+      // find the minimum variance from the maximums
+     if (currMax >= tol) {
+        if (minMaxVar == -1 || minMaxVar > currMax) {
+          minMaxVar = currMax;
           minX = x;
           minY = y;
+        } else if (minMaxVar == currMax) {
+          if ( (minX == 0 || minY == 0) && x != 0 && y != 0 ) {
+            minX = x;
+            minY = y;
+          }
         }
       } else {
         withinTol = true;
@@ -109,7 +120,7 @@ SQtree::Node * SQtree::buildTree(stats & s, pair<int,int> & ul,
     }
   }
   
-  if (!withinTol && minMaxVarVar != -1) {       // either within tolerance or is 1X1
+  if (!withinTol && minMaxVar != -1) {       // either within tolerance or is 1X1
     // split
     if (minX == 0) {
       node->NW = buildTree(s, ul, w, minY, tol); 
@@ -162,8 +173,7 @@ void SQtree::copy(const SQtree & other) {
 
 int SQtree::size() {
   // Your code here.
-  //return nodeCount(root);
-  return 1;
+  return nodeCount(root);
 }
 
 int SQtree::nodeCount(Node * node) {

@@ -33,7 +33,7 @@ long stats::calcSum(PNG & im, char channel, int x, int y) {
 }
 
 long stats::calcSumSq(PNG & im, char channel, int x, int y) {
-    vector< vector< long >>* sumSq = channel == 'r' ? &sumsqRed 
+    vector< vector< long >> * sumSq = channel == 'r' ? &sumsqRed 
                 : (channel == 'g' ? &sumsqGreen : &sumsqBlue);
     
     RGBAPixel * curr = im.getPixel(x, y);

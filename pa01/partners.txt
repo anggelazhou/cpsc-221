@@ -1,2 +1,2 @@
 cwl: anggelaz
-No partners
+cwl: pshres
